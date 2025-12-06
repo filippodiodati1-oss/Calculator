@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* -------------------------------------------------------
+   Aurora Background Effect
+-------------------------------------------------------- */
+
+@keyframes auroraMove {
+  0% {
+    transform: translate(-10%, -10%) rotate(0deg);
+  }
+  50% {
+    transform: translate(10%, 10%) rotate(180deg);
+  }
+  100% {
+    transform: translate(-10%, -10%) rotate(360deg);
+  }
+}
+
+.aurora-bg {
+  position: fixed; /* fixed behind content */
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.aurora-bg .aurora-container {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each blob */
+.aurora-bg .aurora-container > div {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  filter: blur(90px);
+  opacity: 0.45;
+  border-radius: 50%;
+  animation: auroraMove 18s ease-in-out infinite;
+}
+
+.aurora-bg .aurora-container .blob-1 {
+  top: -10%;
+  left: -10%;
+  background: linear-gradient(to right, #7c3aed, #4f46e5, #3b82f6);
+}
+
+.aurora-bg .aurora-container .blob-2 {
+  bottom: -10%;
+  right: -10%;
+  background: linear-gradient(to right, #ec4899, #ef4444, #f59e0b);
+}

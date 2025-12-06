@@ -1,0 +1,101 @@
+import React from "react";
+import { Box, Button, IconButton } from "@mui/material";
+import { LightMode, DarkMode } from "@mui/icons-material";
+
+// ✅ Exported type
+export interface PillNavItem {
+  label: string;
+  onClick: () => void;
+  isActive?: boolean;
+}
+
+interface PillNavProps {
+  logoLight: string;
+  logoDark: string;
+  items: PillNavItem[];
+  themeMode?: "light" | "dark";
+  toggleTheme?: () => void;
+}
+
+const PillNav: React.FC<PillNavProps> = ({
+  logoLight,
+  logoDark,
+  items,
+  themeMode = "light",
+  toggleTheme,
+}) => {
+  const textColor = themeMode === "light" ? "#111111" : "#FFFFFF";
+  const logo = themeMode === "light" ? logoLight : logoDark;
+
+  return (
+    <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 1440,
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 2,
+          py: 2,
+          backdropFilter: "blur(20px)",
+          backgroundColor:
+            themeMode === "light"
+              ? "rgba(255,255,255,0.12)"
+              : "rgba(28,28,28,0.28)",
+          borderBottom: `1.5px solid ${
+            themeMode === "light" ? "rgba(17,17,17,0.07)" : "rgba(255,255,255,0.08)"
+          }`,
+          position: "relative",
+        }}
+      >
+        {/* Logo */}
+        <Box sx={{ display: "flex", alignItems: "center", mb: { xs: 3, md: 0 } }}>
+          <Box
+            component="img"
+            src={logo}
+            alt="Company Logo"
+            sx={{ height: { xs: 30, md: 24 } }} // 25% smaller
+          />
+        </Box>
+
+        {/* Pills + Theme Icon (no background pill now) */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+          {items.map((item) => (
+            <Button
+              key={item.label}
+              onClick={item.onClick}
+              sx={{
+                textTransform: "none",
+                fontSize: "15px",
+                color: textColor,
+                borderRadius: "0px",
+                px: 2,
+                py: 0.75,
+                background: "transparent",
+                "&:hover": {
+                  background:
+                    themeMode === "light"
+                      ? "rgba(0,0,0,0.05)"
+                      : "rgba(255,255,255,0.15)",
+                  color: textColor,
+                },
+              }}
+            >
+              {item.label}
+            </Button>
+          ))}
+
+          {toggleTheme && (
+            <IconButton onClick={toggleTheme} sx={{ color: textColor }}>
+              {themeMode === "light" ? <DarkMode /> : <LightMode />}
+            </IconButton>
+          )}
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default PillNav;

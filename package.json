@@ -1,0 +1,71 @@
+{
+  "name": "leasehold-mui",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://filippodiodati1-oss.github.io/LeaseholdCalculator",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.4",
+    "@mui/material": "^7.3.4",
+    "@mui/x-charts": "^8.16.0",
+    "@rive-app/react-canvas": "^4.23.4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.126",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "^0.181.0",
+    "framer-motion": "^12.23.24",
+    "gh-pages": "^6.3.0",
+    "mathjs": "^15.0.0",
+    "motion": "^12.23.24",
+    "ogl": "^1.0.11",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.0",
+    "react-countup": "^6.5.3",
+    "react-dom": "^19.2.0",
+    "react-google-charts": "^5.2.1",
+    "react-number-format": "^5.4.4",
+    "react-router-dom": "^7.9.5",
+    "react-scripts": "^5.0.1",
+    "recharts": "^3.3.0",
+    "three": "^0.181.0",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/mathjs": "^9.4.1",
+    "@types/react-router-dom": "^5.3.3",
+    "html-webpack-plugin": "^5.6.4"
+  }
+}
