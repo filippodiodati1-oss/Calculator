@@ -3,18 +3,11 @@ import {
   Box,
   Typography,
   useTheme,
-  styled,
   SxProps,
   Theme,
+  styled,
 } from "@mui/material";
 import CountUp from "./CountUp";
-
-interface ForecastValueProps {
-  currentValue: number;
-  remainingLeaseYears: number;
-  additionalYears: number; // e.g., 90
-  sx?: SxProps<Theme>;
-}
 
 // -----------------------------
 // Frosted Glass Box
@@ -28,7 +21,7 @@ const FrostedGlassBox = styled(Box)(({ theme }) => {
     overflow: "hidden",
     isolation: "isolate",
     padding: theme.spacing(4, 6),
-    backgroundColor: isLight ? "rgba(255,255,255,0.42)" : "rgba(28,28,28,0.28)",
+    backgroundColor: isLight ? "rgba(255,255,255,0.95)" : "rgba(28,28,28,0.28)",
     borderRadius: theme.spacing(5),
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
@@ -45,6 +38,13 @@ const FrostedGlassBox = styled(Box)(({ theme }) => {
   };
 });
 
+interface ForecastValueProps {
+  currentValue: number;
+  remainingLeaseYears: number;
+  additionalYears: number; // e.g., 90
+  sx?: SxProps<Theme>;
+}
+
 const ForecastValue: React.FC<ForecastValueProps> = ({
   currentValue,
   remainingLeaseYears,
@@ -53,16 +53,27 @@ const ForecastValue: React.FC<ForecastValueProps> = ({
 }) => {
   const theme = useTheme();
   const isLight = theme.palette.mode === "light";
-  const forecastLease = remainingLeaseYears + additionalYears;
+  const newLeaseDuration = remainingLeaseYears + additionalYears;
 
-  const baseNumberSize = 42; // original px size
-  const numberSize = baseNumberSize * 1.15; // 15% bigger
+  const baseNumberSize = 42;
+  const numberSize = baseNumberSize * 0.85; // slightly smaller than Results
 
   return (
     <FrostedGlassBox
-      sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1 }}
+      sx={{ ...sx, display: "flex", flexDirection: "column", gap: 2 }}
     >
-      {/* Big number with yrs */}
+      {/* Title */}
+      <Typography
+        sx={{
+          fontWeight: 600,
+          fontSize: 18,
+          color: isLight ? "#111111" : theme.palette.text.primary,
+        }}
+      >
+        Estimated lease after extension
+      </Typography>
+
+      {/* Big animated number */}
       <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
         <Typography
           sx={{
@@ -71,7 +82,12 @@ const ForecastValue: React.FC<ForecastValueProps> = ({
             color: isLight ? "#111111" : theme.palette.text.primary,
           }}
         >
-          <CountUp from={0} to={forecastLease} separator="," duration={0.5} />
+          <CountUp
+            from={remainingLeaseYears}
+            to={newLeaseDuration}
+            separator=","
+            duration={0.5}
+          />
         </Typography>
         <Typography
           sx={{
@@ -85,30 +101,18 @@ const ForecastValue: React.FC<ForecastValueProps> = ({
         </Typography>
       </Box>
 
-      {/* Title under the number */}
-      <Typography
-        sx={{
-          fontWeight: 600,
-          fontSize: 18,
-          lineHeight: 1,
-          mt: 0,
-          color: isLight ? "#111111" : theme.palette.text.primary,
-        }}
-      >
-        Estimated lease after extension
-      </Typography>
-
-      {/* Subtitle close to title */}
+      {/* Paragraph description */}
       <Typography
         sx={{
           fontSize: 16,
           fontWeight: 500,
           color: isLight ? "#454545" : "rgba(255,255,255,0.7)",
-          lineHeight: 1,
-          mt: "2px", // tight spacing
+          lineHeight: 1.5,
         }}
       >
-        +{additionalYears} years added to the lease
+        Extending your lease today could add{" "}
+        <strong>{additionalYears} years</strong>, resulting in a new total lease
+        of <strong>{newLeaseDuration} years</strong>.
       </Typography>
     </FrostedGlassBox>
   );

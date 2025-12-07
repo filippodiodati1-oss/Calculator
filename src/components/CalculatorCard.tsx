@@ -35,7 +35,8 @@ const FrostedGlassBox = styled(Box)(({ theme }) => {
     position: "relative",
     overflow: "hidden",
     isolation: "isolate",
-    backgroundColor: isLight ? "rgba(255,255,255,0.42)" : "rgba(28,28,28,0.28)",
+    // Light theme 95% opacity white background, dark theme remains unchanged
+    backgroundColor: isLight ? "rgba(255,255,255,0.95)" : "rgba(28,28,28,0.28)",
     padding: theme.spacing(4, 8),
     boxShadow: "none",
     border: `1.5px solid rgba(255,255,255,${borderOpacity})`,
@@ -311,7 +312,7 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
             color: isLight ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.5)",
           }}
         >
-          * This calculator is for display purposes only. The deferment rate is
+          This calculator is for display purposes only. The deferment rate is
           set at 5% and results are indicative. Inflation adjustment is assumed
           at 2.5% per year.
         </Typography>

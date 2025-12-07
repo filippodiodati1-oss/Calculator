@@ -1,5 +1,12 @@
 import React, { useMemo } from "react";
-import { Box, Typography, useTheme, SxProps, Theme } from "@mui/material";
+import {
+  Box,
+  Typography,
+  useTheme,
+  SxProps,
+  Theme,
+  styled,
+} from "@mui/material";
 import {
   BarChart,
   Bar,
@@ -11,8 +18,40 @@ import {
 } from "recharts";
 import { computePremium } from "../lib/computePremium";
 import { getRelativityRate } from "../lib/relativityData";
-import { FrostedGlassBox, formatNumber, formatAxisNumber } from "./shared";
+import { formatNumber, formatAxisNumber } from "./shared";
 
+// -----------------------------
+// Frosted Glass Box
+// -----------------------------
+const FrostedGlassBox = styled(Box)(({ theme }) => {
+  const isLight = theme.palette.mode === "light";
+  const borderOpacity = isLight ? 0.4 : 0.03;
+
+  return {
+    position: "relative",
+    overflow: "hidden",
+    isolation: "isolate",
+    padding: theme.spacing(4, 6),
+    backgroundColor: isLight ? "rgba(255,255,255,0.95)" : "rgba(28,28,28,0.28)",
+    borderRadius: theme.spacing(5),
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    boxShadow: "none",
+    border: `1.5px solid rgba(255,255,255,${borderOpacity})`,
+    [theme.breakpoints.down("md")]: {
+      borderRadius: `calc(${theme.spacing(5)} * 0.7)`,
+      padding: theme.spacing(2, 3),
+    },
+    [theme.breakpoints.down("sm")]: {
+      borderRadius: `calc(${theme.spacing(5)} * 0.7)`,
+      padding: theme.spacing(2, 3),
+    },
+  };
+});
+
+// -----------------------------
+// Types
+// -----------------------------
 interface WaitProps {
   propertyValue: number;
   remainingYears: number;
@@ -21,6 +60,9 @@ interface WaitProps {
   sx?: SxProps<Theme>;
 }
 
+// -----------------------------
+// Component
+// -----------------------------
 const Wait: React.FC<WaitProps> = ({
   propertyValue,
   remainingYears,
@@ -31,7 +73,8 @@ const Wait: React.FC<WaitProps> = ({
   const theme = useTheme();
   const isLight = theme.palette.mode === "light";
 
-  const forecastYears = 6;
+  // Next 3 years after the input year
+  const forecastYears = 3;
 
   const data = useMemo(() => {
     const result: { leaseYear: number; totalCost: number }[] = [];
@@ -47,8 +90,7 @@ const Wait: React.FC<WaitProps> = ({
       });
       result.push({ leaseYear: yearsLeft, totalCost: total });
     }
-    // Remove the last bar
-    return result.slice(0, result.length - 1);
+    return result;
   }, [
     forecastYears,
     remainingYears,
@@ -79,25 +121,29 @@ const Wait: React.FC<WaitProps> = ({
           }}
         >
           As your lease shortens, the premium increases — sharply once it falls
-          below 80 years
+          below 80 years.
         </Typography>
       </Box>
 
       {/* Chart */}
-      <Box sx={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer>
+      <Box sx={{ width: "100%", height: 300, px: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
-            barSize={40} // slightly narrower bars
+            margin={{ top: 20, right: 0, left: 0, bottom: 20 }}
+            barSize={80} // wider bars for better visual
           >
             <CartesianGrid stroke={gridStroke} strokeDasharray="4 2" />
-            <XAxis dataKey="leaseYear" tick={{ fill: axisTextColor }} />
+            <XAxis
+              dataKey="leaseYear"
+              type="category"
+              tick={{ fill: axisTextColor }}
+              reversed={false} // left-to-right diminishing years
+            />
             <YAxis
               tick={{ fill: axisTextColor }}
               tickFormatter={formatAxisNumber}
             />
-
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
@@ -138,12 +184,7 @@ const Wait: React.FC<WaitProps> = ({
                 fill: isLight ? "rgba(17,17,17,0.1)" : "rgba(255,255,255,0.05)",
               }}
             />
-
-            <Bar
-              dataKey="totalCost"
-              fill={barColor}
-              radius={[8, 8, 0, 0]} // rounded top corners
-            />
+            <Bar dataKey="totalCost" fill={barColor} radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </Box>

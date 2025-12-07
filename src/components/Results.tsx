@@ -3,24 +3,14 @@ import {
   Box,
   Typography,
   useTheme,
-  styled,
   SxProps,
   Theme,
+  styled,
 } from "@mui/material";
 import CountUp from "./CountUp";
 
-interface ResultsProps {
-  results: {
-    forecastValue?: number;
-    valueIncrease?: number;
-    percentIncrease?: string;
-    currentValue?: number;
-  };
-  sx?: SxProps<Theme>;
-}
-
 // -----------------------------
-// Frosted Glass Box
+// Frosted Glass Box (same style as ForecastValue/Money)
 // -----------------------------
 const FrostedGlassBox = styled(Box)(({ theme }) => {
   const isLight = theme.palette.mode === "light";
@@ -31,7 +21,7 @@ const FrostedGlassBox = styled(Box)(({ theme }) => {
     overflow: "hidden",
     isolation: "isolate",
     padding: theme.spacing(4, 6),
-    backgroundColor: isLight ? "rgba(255,255,255,0.42)" : "rgba(28,28,28,0.28)",
+    backgroundColor: isLight ? "rgba(255,255,255,0.95)" : "rgba(28,28,28,0.28)",
     borderRadius: theme.spacing(5),
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
@@ -55,6 +45,19 @@ const formatNumber = (value: number) =>
   Number.isFinite(value) ? new Intl.NumberFormat("en-GB").format(value) : "0";
 
 // -----------------------------
+// Types
+// -----------------------------
+interface ResultsProps {
+  results: {
+    forecastValue?: number;
+    valueIncrease?: number;
+    percentIncrease?: string;
+    currentValue?: number;
+  };
+  sx?: SxProps<Theme>;
+}
+
+// -----------------------------
 // Component
 // -----------------------------
 const Results: React.FC<ResultsProps> = ({ results, sx }) => {
@@ -66,15 +69,26 @@ const Results: React.FC<ResultsProps> = ({ results, sx }) => {
   const increase = forecastValue - currentValue;
   const increasePct = currentValue > 0 ? (increase / currentValue) * 100 : 0;
 
-  const baseNumberSize = 42; // original px size
-  const numberSize = baseNumberSize * 1.15; // 15% bigger
+  const baseNumberSize = 42;
+  const numberSize = baseNumberSize * 0.85; // consistent with ForecastValue
 
   return (
     <FrostedGlassBox
       ref={containerRef}
-      sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1 }}
+      sx={{ ...sx, display: "flex", flexDirection: "column", gap: 2 }}
     >
-      {/* Big number with £ symbol */}
+      {/* Title */}
+      <Typography
+        sx={{
+          fontWeight: 600,
+          fontSize: 18,
+          color: isLight ? "#111111" : theme.palette.text.primary,
+        }}
+      >
+        Estimated value after lease extension
+      </Typography>
+
+      {/* Big number */}
       <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
         <Typography
           sx={{
@@ -97,30 +111,18 @@ const Results: React.FC<ResultsProps> = ({ results, sx }) => {
         </Typography>
       </Box>
 
-      {/* Title under the big number */}
-      <Typography
-        sx={{
-          fontWeight: 600,
-          fontSize: 18,
-          lineHeight: 1,
-          mt: 0,
-          color: isLight ? "#111111" : theme.palette.text.primary,
-        }}
-      >
-        Estimated value after lease extension
-      </Typography>
-
-      {/* Subtitle really close to title */}
+      {/* Paragraph */}
       <Typography
         sx={{
           fontSize: 16,
           fontWeight: 500,
           color: isLight ? "#454545" : "rgba(255,255,255,0.7)",
-          lineHeight: 1,
-          mt: "2px",
+          lineHeight: 1.5,
         }}
       >
-        Increase: £{formatNumber(increase)} ({increasePct.toFixed(1)}%)
+        Extending your lease today could increase the property’s value by{" "}
+        <strong>£{formatNumber(increase)}</strong>, representing an overall
+        appreciation of <strong>{increasePct.toFixed(1)}%</strong>.
       </Typography>
     </FrostedGlassBox>
   );

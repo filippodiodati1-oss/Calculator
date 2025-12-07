@@ -1,7 +1,16 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { ThemeProvider, CssBaseline, Box } from "@mui/material";
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  ThemeProvider,
+  CssBaseline,
+  Box,
+  Typography,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { createAppTheme } from "./theme";
 
+import PillNav from "./components/PillNav";
+import ShareModal from "./components/ShareModal";
 import Hero from "./components/Hero";
 import CalculatorCard from "./components/CalculatorCard";
 import Results from "./components/Results";
@@ -9,11 +18,10 @@ import ForecastValue from "./components/ForecastValue";
 import Value from "./components/Value";
 import Money from "./components/Money";
 import Wait from "./components/Wait";
-import Risk from "./components/Risk";
-import Aurora from "./components/Aurora";
 import FAQ from "./components/FAQ";
-import PillNav from "./components/PillNav";
 import Footer from "./components/Footer";
+import Aurora from "./components/Aurora";
+import GetQuote from "./components/GetQuote";
 
 import { computePremium } from "./lib/computePremium";
 import { getRelativityRate } from "./lib/relativityData";
@@ -24,28 +32,18 @@ import logoDark from "./assets/logo-dark.svg";
 const App: React.FC = () => {
   const [mode, setMode] = useState<"light" | "dark">("dark");
   const theme = useMemo(() => createAppTheme(mode), [mode]);
+  const muiTheme = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
 
+  // Calculator state
   const [remainingLeaseYears, setRemainingLeaseYears] = useState(70);
   const [groundRent, setGroundRent] = useState(500);
   const [currentValue, setCurrentValue] = useState(500_000);
   const [propertyType, setPropertyType] = useState<"House" | "Flat">("Flat");
 
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
   const standardDefermentRate = 5;
-
-  const calculatorRef = useRef<HTMLDivElement | null>(null);
-  const faqRef = useRef<HTMLDivElement | null>(null);
-
-  // Generate share URL with current inputs
-  const generateShareUrl = () => {
-    const params = new URLSearchParams({
-      remainingLeaseYears: remainingLeaseYears.toString(),
-      groundRent: groundRent.toString(),
-      currentValue: currentValue.toString(),
-      propertyType,
-    });
-
-    return `${window.location.origin}?${params.toString()}`;
-  };
 
   // Restore inputs from URL
   useEffect(() => {
@@ -61,7 +59,7 @@ const App: React.FC = () => {
     if (pt === "House" || pt === "Flat") setPropertyType(pt);
   }, []);
 
-  // Theme storage
+  // Store theme
   useEffect(() => {
     const stored = localStorage.getItem("theme") as "light" | "dark" | null;
     if (stored) setMode(stored);
@@ -71,7 +69,7 @@ const App: React.FC = () => {
     localStorage.setItem("theme", mode);
   }, [mode]);
 
-  // Compute premium results
+  // Compute premium
   const results = useMemo(() => {
     const relativity = getRelativityRate(remainingLeaseYears);
     return computePremium({
@@ -83,7 +81,7 @@ const App: React.FC = () => {
     });
   }, [currentValue, remainingLeaseYears, groundRent]);
 
-  // Compute forecast value and increase
+  // Forecast value
   const getValueIncreasePercentage = (
     remainingYears: number,
     propertyType: "House" | "Flat"
@@ -121,11 +119,36 @@ const App: React.FC = () => {
     currentValue * getRelativityRate(remainingLeaseYears)
   );
 
+  // Generate share URL
+  const generateShareUrl = () => {
+    const params = new URLSearchParams({
+      remainingLeaseYears: remainingLeaseYears.toString(),
+      groundRent: groundRent.toString(),
+      currentValue: currentValue.toString(),
+      propertyType,
+    });
+    return `https://filippodiodati1-oss.github.io/Calculator/?${params.toString()}`;
+  };
+
+  const textColor = mode === "light" ? "#000" : "#fff";
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      {/* Aurora Background */}
+      {/* Light mode background */}
+      <Box
+        sx={{
+          position: "fixed",
+          inset: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: mode === "light" ? "#f5f5f7" : "transparent",
+          zIndex: -2,
+        }}
+      />
+
+      {/* Aurora effect */}
       <Box
         sx={{
           position: "fixed",
@@ -145,12 +168,26 @@ const App: React.FC = () => {
         />
       </Box>
 
+      {/* Nav */}
       <PillNav
         logoLight={logoLight}
         logoDark={logoDark}
         themeMode={mode}
         toggleTheme={() => setMode(mode === "light" ? "dark" : "light")}
-        onShare={() => console.log("Share clicked")}
+        onShare={() => setIsShareOpen(true)}
+      />
+
+      {/* Share Modal */}
+      <ShareModal
+        open={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        remainingLeaseYears={remainingLeaseYears}
+        forecastValue={forecastValue}
+        totalPremium={results.total}
+        currentValue={currentValue}
+        groundRent={groundRent}
+        propertyType={propertyType}
+        shareUrl={generateShareUrl()}
       />
 
       {/* Main Layout */}
@@ -167,7 +204,6 @@ const App: React.FC = () => {
       >
         <Hero themeMode={mode} />
 
-        {/* Two-column layout */}
         <Box
           sx={{
             display: "flex",
@@ -178,7 +214,7 @@ const App: React.FC = () => {
             gap: { xs: 2, md: 4 },
           }}
         >
-          {/* Left Column */}
+          {/* Calculator column */}
           <Box
             sx={{
               flex: { xs: "1 1 auto", md: 0.35 },
@@ -188,7 +224,6 @@ const App: React.FC = () => {
               alignSelf: "flex-start",
               zIndex: 2,
             }}
-            ref={calculatorRef}
           >
             <CalculatorCard
               remainingLeaseYears={remainingLeaseYears}
@@ -202,7 +237,7 @@ const App: React.FC = () => {
             />
           </Box>
 
-          {/* Right Column */}
+          {/* Results column */}
           <Box
             sx={{
               flex: { xs: "1 1 auto", md: 0.65 },
@@ -211,6 +246,23 @@ const App: React.FC = () => {
               gap: { xs: 2, md: 3 },
             }}
           >
+            {/* Mobile-only "Your results" text */}
+            {isMobile && (
+              <Typography
+                variant="h5"
+                sx={{
+                  pt: 6,
+                  pb: 0,
+                  fontWeight: 700,
+                  textAlign: "left",
+                  color: textColor,
+                  gridColumn: "1 / -1",
+                }}
+              >
+                Your results
+              </Typography>
+            )}
+
             <Results
               results={{
                 forecastValue,
@@ -226,7 +278,6 @@ const App: React.FC = () => {
               additionalYears={90}
               sx={{ width: "100%" }}
             />
-
             <Value
               currentLeaseValue={currentLeaseValue}
               afterExtensionValue={forecastValue}
@@ -235,7 +286,6 @@ const App: React.FC = () => {
               currentPropertyValue={currentValue}
               sx={{ width: "100%" }}
             />
-
             <Money
               marriageValue={results.marriageValue}
               groundRentComp={results.grc}
@@ -243,7 +293,6 @@ const App: React.FC = () => {
               totalPremium={results.total}
               sx={{ width: "100%" }}
             />
-
             <Wait
               propertyValue={currentValue}
               remainingYears={remainingLeaseYears}
@@ -251,26 +300,18 @@ const App: React.FC = () => {
               defermentRatePct={standardDefermentRate}
               sx={{ width: "100%" }}
             />
-
-            <Risk
-              remainingLeaseYears={remainingLeaseYears}
-              forecastValue={forecastValue}
-              totalPremium={results.total}
-              additionalYears={90}
-              currentValue={currentValue}
-              groundRent={groundRent}
-              propertyType={propertyType}
-              shareUrl={generateShareUrl()}
-            />
+            <GetQuote sx={{ width: "100%" }} />
           </Box>
         </Box>
 
-        {/* FAQ */}
-        <Box ref={faqRef} sx={{ mt: 6, px: { xs: 2, md: 4 } }}>
+        <Box sx={{ mt: 6, px: { xs: 2, md: 4 } }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 700, mb: 6, textAlign: "left", color: textColor }}
+          ></Typography>
           <FAQ />
         </Box>
 
-        {/* Footer */}
         <Footer themeMode={mode} />
       </Box>
     </ThemeProvider>

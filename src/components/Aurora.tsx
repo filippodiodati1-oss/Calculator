@@ -175,7 +175,7 @@ export default function Aurora(props: AuroraProps) {
         uColorStops: { value: colorStopsArray },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: blend },
-        uOpacity: { value: opacity },
+        uOpacity: { value: opacity * 0.7 },
       },
     });
 

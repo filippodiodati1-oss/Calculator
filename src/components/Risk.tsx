@@ -1,4 +1,3 @@
-// src/components/Risk.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -17,28 +16,34 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
-const FrostedGlassBox = styled(Box)(({ theme }) => {
+const Container = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "variant",
+})<{ variant?: "default" | "modal" }>(({ theme, variant }) => {
   const isLight = theme.palette.mode === "light";
+  if (variant === "modal") {
+    // ✅ No background, padding, or border in modal
+    return {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      width: "100%",
+    };
+  }
+  // Default Risk style for main UI
   const borderOpacity = isLight ? 0.4 : 0.03;
-  const bgColor = isLight ? "rgba(255,255,255,0.42)" : "rgba(28,28,28,0.28)";
   return {
     position: "relative",
     overflow: "hidden",
-    isolation: "isolate",
-    padding: theme.spacing(4, 6),
-    backgroundColor: bgColor,
+    padding: theme.spacing(4),
+    backgroundColor: isLight ? "rgba(255,255,255,0.42)" : "rgba(28,28,28,0.28)",
     borderRadius: theme.spacing(5),
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
-    boxShadow: "none",
-    border: `1.5px solid rgba(255,255,255,${borderOpacity})`,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    [theme.breakpoints.down("md")]: {
-      borderRadius: `calc(${theme.spacing(5)} * 0.7)`,
-      padding: theme.spacing(2, 3),
-    },
+    boxShadow: "none",
+    border: `1.5px solid rgba(255,255,255,${borderOpacity})`,
   };
 });
 
@@ -56,11 +61,12 @@ interface RiskProps {
   remainingLeaseYears: number;
   forecastValue: number;
   totalPremium: number;
-  additionalYears?: number; // usually 90
+  additionalYears?: number;
   currentValue?: number;
   groundRent?: number;
   propertyType?: "House" | "Flat";
   shareUrl: string;
+  variant?: "default" | "modal"; // ✅ new prop
 }
 
 const Risk: React.FC<RiskProps> = ({
@@ -69,7 +75,11 @@ const Risk: React.FC<RiskProps> = ({
   forecastValue,
   totalPremium,
   additionalYears = 90,
+  currentValue,
+  groundRent,
+  propertyType,
   shareUrl,
+  variant = "default",
 }) => {
   const theme = useTheme();
   const isLight = theme.palette.mode === "light";
@@ -88,8 +98,13 @@ Check it out: ${shareUrl}`;
 
   const encodedMessage = encodeURIComponent(message);
 
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const whatsappLink = isMobile
+    ? `https://wa.me/?text=${encodedMessage}`
+    : `https://api.whatsapp.com/send?text=${encodedMessage}`;
+
   const shareLinks = {
-    whatsapp: `https://api.whatsapp.com/send?text=${encodedMessage}`,
+    whatsapp: whatsappLink,
     email: `mailto:?subject=Lease Extension Result&body=${encodedMessage}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
       shareUrl
@@ -102,13 +117,13 @@ Check it out: ${shareUrl}`;
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    setTimeout(() => setCopied(false), 1500);
   };
 
   const buttonBg = isLight ? "rgba(17,17,17,0.07)" : "rgba(255,255,255,0.08)";
 
   return (
-    <FrostedGlassBox sx={{ ...sx }}>
+    <Container sx={{ ...sx }} variant={variant}>
       <Typography
         sx={{
           fontWeight: 600,
@@ -134,7 +149,6 @@ Check it out: ${shareUrl}`;
         extension results.
       </Typography>
 
-      {/* QR Code */}
       <Box
         sx={{
           mb: 4,
@@ -150,8 +164,15 @@ Check it out: ${shareUrl}`;
         />
       </Box>
 
-      {/* Share Buttons */}
-      <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 2,
+          mt: 2,
+          flexWrap: "wrap",
+        }}
+      >
         {[
           { icon: <WhatsAppIcon />, link: shareLinks.whatsapp },
           { icon: <EmailIcon />, link: shareLinks.email },
@@ -186,18 +207,19 @@ Check it out: ${shareUrl}`;
                 px: 2,
                 py: 0.5,
                 borderRadius: 50,
-                bgcolor: "success.main",
+                bgcolor: "#6842FFCC",
                 color: "#fff",
                 fontSize: 12,
                 fontWeight: 600,
+                whiteSpace: "nowrap",
               }}
             >
-              Link copied
+              Copied
             </Box>
           </Fade>
         </Box>
       </Box>
-    </FrostedGlassBox>
+    </Container>
   );
 };
 

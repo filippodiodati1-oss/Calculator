@@ -29,15 +29,11 @@ const PillNav: React.FC<PillNavProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Background opacity as you scroll
   const bgOpacity = Math.min(scrollY / 100, 1);
-
-  // Glass background color depending on mode
   const glassColor = isLight
-    ? `rgba(17,17,17,${0.05 * bgOpacity})` // very subtle dark overlay for light mode
-    : `rgba(0,0,0,${0.3 * bgOpacity})`; // darker overlay for dark mode
-
-  const strokeColor = "#FFFFFF"; // bottom border gradient color
+    ? `rgba(17,17,17,${0.05 * bgOpacity})`
+    : `rgba(0,0,0,${0.3 * bgOpacity})`;
+  const strokeColor = "#FFFFFF";
 
   return (
     <Box
@@ -48,7 +44,6 @@ const PillNav: React.FC<PillNavProps> = ({
         zIndex: 50,
       }}
     >
-      {/* Background + bottom stroke */}
       <Box
         sx={{
           position: "absolute",
@@ -69,7 +64,6 @@ const PillNav: React.FC<PillNavProps> = ({
         }}
       />
 
-      {/* Content */}
       <Box
         sx={{
           width: "100%",
@@ -82,7 +76,6 @@ const PillNav: React.FC<PillNavProps> = ({
           mx: "auto",
         }}
       >
-        {/* Logo */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box
             component="img"
@@ -92,7 +85,6 @@ const PillNav: React.FC<PillNavProps> = ({
           />
         </Box>
 
-        {/* Right Buttons: Theme + Share */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           {toggleTheme && (
             <IconButton onClick={toggleTheme} sx={{ color: textColor }}>

@@ -10,10 +10,42 @@ import {
   useTheme,
   SxProps,
   Theme,
+  styled,
 } from "@mui/material";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
-import { FrostedGlassBox } from "./shared";
 
+// -----------------------------
+// Frosted Glass Box
+// -----------------------------
+export const FrostedGlassBox = styled(Box)(({ theme }) => {
+  const isLight = theme.palette.mode === "light";
+  const borderOpacity = isLight ? 0.4 : 0.03;
+
+  return {
+    position: "relative",
+    overflow: "hidden",
+    isolation: "isolate",
+    padding: theme.spacing(4, 6),
+    backgroundColor: isLight ? "rgba(255,255,255,0.95)" : "rgba(28,28,28,0.28)",
+    borderRadius: theme.spacing(5),
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    boxShadow: "none",
+    border: `1.5px solid rgba(255,255,255,${borderOpacity})`,
+    [theme.breakpoints.down("md")]: {
+      borderRadius: `calc(${theme.spacing(5)} * 0.7)`,
+      padding: theme.spacing(2, 3),
+    },
+    [theme.breakpoints.down("sm")]: {
+      borderRadius: `calc(${theme.spacing(5)} * 0.7)`,
+      padding: theme.spacing(2, 3),
+    },
+  };
+});
+
+// -----------------------------
+// Types
+// -----------------------------
 interface MoneyProps {
   marriageValue: number;
   groundRentComp: number;
@@ -34,6 +66,9 @@ export const formatNumber = (num: number) => {
   return `£${num.toLocaleString("en-GB")}`;
 };
 
+// -----------------------------
+// Component
+// -----------------------------
 const Money: React.FC<MoneyProps> = ({
   marriageValue,
   groundRentComp,
@@ -44,7 +79,7 @@ const Money: React.FC<MoneyProps> = ({
   const theme = useTheme();
   const isLight = theme.palette.mode === "light";
 
-  const axisTextColor = isLight ? "#111111" : "#FFFFFF"; // updated
+  const axisTextColor = isLight ? "#111111" : "#FFFFFF";
   const subtitleColor = isLight ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
   const dividerColor = isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)";
 
@@ -143,7 +178,7 @@ const Money: React.FC<MoneyProps> = ({
                     display: "flex",
                     alignItems: "center",
                     fontWeight: "inherit",
-                    color: axisTextColor, // updated
+                    color: axisTextColor,
                     borderBottom:
                       index === tableData.length - 1
                         ? "none"
@@ -170,7 +205,7 @@ const Money: React.FC<MoneyProps> = ({
                   align="right"
                   sx={{
                     fontWeight: "inherit",
-                    color: axisTextColor, // updated
+                    color: axisTextColor,
                     borderBottom:
                       index === tableData.length - 1
                         ? "none"
